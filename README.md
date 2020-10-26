@@ -205,3 +205,45 @@ case seC:
 
 This method requires more work and requires code generation, but avoids the
 problems of heap allocation, indirection from interfaces, and large structs.
+
+# How it works
+
+In the examples above, the generated union is treated as a black box. Here is
+what actually gets generated from the Template union example in the usage
+section:
+
+```go
+package main
+
+import (
+	"unsafe"
+)
+
+type TemplateUnion struct {
+	data [1]uint32
+}
+
+func (u *TemplateUnion) i1() uint32 {
+	return *(*uint32)(unsafe.Pointer(&u.data))
+}
+func (u *TemplateUnion) i1Put(v uint32) {
+	*(*uint32)(unsafe.Pointer(&u.data)) = v
+}
+
+func (u *TemplateUnion) i2() uint16 {
+	return *(*uint16)(unsafe.Pointer(&u.data))
+}
+func (u *TemplateUnion) i2Put(v uint16) {
+	*(*uint16)(unsafe.Pointer(&u.data)) = v
+}
+```
+
+The `...Union` struct is just a wrapper for an underlying buffer. Each
+getter/setter uses the unsafe package to access the buffer and cast it to the
+corresponding type. During generation, unionize determines the correct size of
+the buffer based on the largest size and the largest alignment among union
+members. Unionize also picks a primitive type for the underlying buffer that
+satisfies the alignment requirements of the union member with the largest
+alignment. In this example, the `uint32` has the largest alignment, with an
+alignment of 4, so the underlying buffer uses the primitive type `uint32` to
+ensure it is properly aligned.
