@@ -36,7 +36,7 @@ Run `unionize` and provide the name of the template, plus the package the
 template is defined in.
 
 ```
-unionize Template .
+unionize -output=template_union.go Template .
 ```
 
 This will output
@@ -44,19 +44,21 @@ This will output
 ```go
 package main
 
-import ( /* ... */ )
+import ( ... )
 
-type TemplateUnion struct { /* ... */ }
+type TemplateUnion struct { ... }
 
-func (u *TemplateUnion) i1() uint32     { /* ... */ }
-func (u *TemplateUnion) i1Put(v uint32) { /* ... */ }
+func (u *TemplateUnion) i1() uint32     { ... }
+func (u *TemplateUnion) i1Set(v uint32) { ... }
 
-func (u *TemplateUnion) i2() uint16     { /* ... */ }
-func (u *TemplateUnion) i2Put(v uint16) { /* ... */ }
+func (u *TemplateUnion) i2() uint16     { ... }
+func (u *TemplateUnion) i2Set(v uint16) { ... }
 ```
 
-See `unionize -h` for additional options for generation. If you are interested,
-take a look at the generated code to see how it works.
+By default, `unionize` will print to stdout, but the `-output` option lets you
+specify a file as output. See `unionize -h` for additional options for
+generation. If you are interested, take a look at the generated code to see how
+it works.
 
 Once the union is generated, you can use it in your code:
 
