@@ -49,10 +49,10 @@ import ( ... )
 type TemplateUnion struct { ... }
 
 func (u *TemplateUnion) i1() uint32     { ... }
-func (u *TemplateUnion) i1Set(v uint32) { ... }
+func (u *TemplateUnion) i1Put(v uint32) { ... }
 
 func (u *TemplateUnion) i2() uint16     { ... }
-func (u *TemplateUnion) i2Set(v uint16) { ... }
+func (u *TemplateUnion) i2Put(v uint16) { ... }
 ```
 
 By default, `unionize` will print to stdout, but the `-output` option lets you
