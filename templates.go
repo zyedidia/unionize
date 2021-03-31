@@ -13,11 +13,22 @@ import (
 )
 `
 
+var safeImportTemplate = `
+import (
+	%s
+)
+`
+
 // [1] is the name of the union type, and [2] is the size of the underlying
 // buffer, [3] is the type of the buffer (for alignment purposes).
 var structTemplate = `
 type %[1]s struct {
 	data [%[2]d]%[3]s
+}
+`
+var safeStructTemplate = `
+type %[1]s struct {
+	%[2]s
 }
 `
 
@@ -29,5 +40,14 @@ func (u *%[1]s) %[2]s() %[3]s {
 }
 func (u *%[1]s) %[2]sPut(v %[3]s) {
 	*(*%[3]s)(unsafe.Pointer(&u.data)) = v
+}
+`
+
+var safeFieldTemplate = `
+func (u *%[1]s) %[2]s() %[3]s {
+	return u._%[2]s
+}
+func (u *%[1]s) %[2]sPut(v %[3]s) {
+	u._%[2]s = v
 }
 `

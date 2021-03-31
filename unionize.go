@@ -124,6 +124,19 @@ func StringUnion(name string, size, align int64, fields []Field, pkg *types.Pack
 	return s
 }
 
+func SafeStringUnion(name string, fields []Field, pkg *types.Package) string {
+	strfields := make([]string, len(fields))
+	for i, f := range fields {
+		strfields[i] = fmt.Sprintf("_%s %s", f.name, types.TypeString(f.typ, qual(pkg)))
+	}
+	s := fmt.Sprintf(safeStructTemplate, name, strings.Join(strfields, "\n"))
+	for _, f := range fields {
+		s += fmt.Sprintf(safeFieldTemplate, name, f.name, types.TypeString(f.typ, qual(pkg)))
+	}
+
+	return s
+}
+
 func main() {
 	flag.Usage = func() {
 		fmt.Println("Usage of unionize:")
@@ -139,6 +152,7 @@ func main() {
 	flagPkg := flag.String("pkg", "main", "output package name")
 	flagUnion := flag.String("otype", "", "output union type name")
 	flagFile := flag.String("output", "", "output file name")
+	flagSafe := flag.Bool("safe", false, "do not use unsafe")
 
 	flag.Parse()
 	args := flag.Args()
@@ -191,8 +205,15 @@ func main() {
 	buf := &bytes.Buffer{}
 	buf.WriteString(header)
 	buf.WriteString(fmt.Sprintf(packageTemplate, *flagPkg))
+	var unionstr string
+	if *flagSafe {
+		importTemplate = safeImportTemplate
+		unionstr = SafeStringUnion(unionName, fields, pkg.Types)
+	} else {
+		unionstr = StringUnion(unionName, sz, align, fields, pkg.Types)
+	}
 	buf.WriteString(fmt.Sprintf(importTemplate, strings.Join(imports, "\n")))
-	buf.WriteString(StringUnion(unionName, sz, align, fields, pkg.Types))
+	buf.WriteString(unionstr)
 
 	output, err := format.Source(buf.Bytes())
 	if err != nil {
