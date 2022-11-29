@@ -153,6 +153,7 @@ func main() {
 	flagUnion := flag.String("otype", "", "output union type name")
 	flagFile := flag.String("output", "", "output file name")
 	flagSafe := flag.Bool("safe", false, "do not use unsafe")
+	flagWarn := flag.Bool("warn", false, "show package import errors")
 
 	flag.Parse()
 	args := flag.Args()
@@ -169,8 +170,9 @@ func main() {
 		fmt.Fprintf(os.Stderr, "load: %v\n", err)
 		os.Exit(1)
 	}
-	if packages.PrintErrors(pkgs) > 0 {
-		os.Exit(1)
+
+	if *flagWarn {
+		packages.PrintErrors(pkgs)
 	}
 
 	if len(pkgs) <= 0 {
