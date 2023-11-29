@@ -15,7 +15,7 @@ Use with caution!
 # Installation
 
 ```
-go get github.com/zyedidia/unionize
+go install github.com/zyedidia/unionize
 ```
 
 This will install a command-line tool called `unionize` which you can use to
